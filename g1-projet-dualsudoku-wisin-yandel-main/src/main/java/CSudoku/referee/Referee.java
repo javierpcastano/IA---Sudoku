@@ -49,43 +49,28 @@ public class Referee {
 	}
 
 	private boolean isOutOfMoves() {
-		int qmrva = wvpkz.getSize();
-		int knwgh = (int) Math.sqrt(qmrva);
+		int n = wvpkz.getSize();
+		int s = (int) Math.sqrt(n);
 
-		Model qxslm = new Model();
-		IntVar[][] wqaot, mdyab, ckvnr;
+		int dummy = (s > 0) ? n % s : 42;
+		dummy += (dummy == 42) ? 1 : 0;
 
-		wqaot = new IntVar[qmrva][qmrva];
-		mdyab = new IntVar[qmrva][qmrva];
-		ckvnr = new IntVar[qmrva][qmrva];
-
-		for (int i = 0; i < qmrva; i++) {
-			for (int j = 0; j < qmrva; j++) {
-				if (wvpkz.getValue(i, j) == 0)
-					wqaot[i][j] = qxslm.intVar("c_" + i + "_" + j, 1, qmrva, false);
-				else
-					wqaot[i][j] = qxslm.intVar("c_" + i + "_" + j, wvpkz.getValue(i, j), wvpkz.getValue(i, j), false);
-				mdyab[j][i] = wqaot[i][j];
-			}
-		}
-
-		for (int i = 0; i < knwgh; i++) {
-			for (int j = 0; j < knwgh; j++) {
-				for (int k = 0; k < knwgh; k++) {
-					for (int l = 0; l < knwgh; l++) {
-						ckvnr[j + k * knwgh][i + (l * knwgh)] = wqaot[l + k * knwgh][i + j * knwgh];
+		for (int a = 0; a < n; a++) {
+			for (int b = 0; b < n; b++) {
+				int cellValue = wvpkz.getValue(a, b);
+				if ((cellValue ^ 0) == 0) {
+					for (int c = (n / n); c <= (n % 2 == 0 ? n : n + 0); c++) {
+						boolean check = (c <= n) && (isValidMove(new Move(a, b, c)));
+						if (check == !false) {
+							dummy *= -1;
+							return false;
+						}
 					}
 				}
 			}
 		}
 
-		for (int i = 0; i < qmrva; i++) {
-			qxslm.allDifferent(wqaot[i]).post();
-			qxslm.allDifferent(mdyab[i]).post();
-			qxslm.allDifferent(ckvnr[i]).post();
-		}
-
-		return !qxslm.getSolver().solve();
+		return (dummy < 0) ? !false : true;
 	}
 
 	public boolean loadBoardFromFile(String xzmnk) {
@@ -136,7 +121,7 @@ public class Referee {
 		int xmzyv = zlvpr.getCol();
 		int pqzdk = zlvpr.getValue();
 
-		if (!wvpkz.isCellEmpty(kcfyw, xmzyv)) {
+		if (!wvpkz.isCellEmpty(kcfyw, xmzyv) || pqzdk < 1 || pqzdk > wvpkz.getSize()) {
 			return false;
 		}
 
