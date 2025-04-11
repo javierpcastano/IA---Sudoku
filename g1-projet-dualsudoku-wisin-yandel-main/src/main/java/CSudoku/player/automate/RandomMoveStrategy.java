@@ -8,7 +8,7 @@ import CSudoku.player.MoveStrategy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.AbstractMap.SimpleEntry;
+
 
 /**
  * Represents a strategy for selecting a random valid move in the Sudoku game.
@@ -26,44 +26,34 @@ public class RandomMoveStrategy implements MoveStrategy {
      */
     @Override
     public Move selectMove(CSudokuBoard board, Player player) {
-
         Random random = new Random();
+        int boardSize = board.getSize();
 
+        List<Move> validMoves = new ArrayList<>();
 
-        int board_Size = board.getSize();
-        List<SimpleEntry<Integer, Integer>> listeDePaires = new ArrayList<>();
-
-        for (int i = 0; i < board_Size; i++){
-            for (int j = 0 ;  j < board_Size; j++){
-                if ()ni
+        // Parcourt toutes les cellules vides
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
+                if (board.isCellEmpty(row, col)) {
+                    for (int value = 1; value <= boardSize; value++) {
+                        Move move = new Move(row, col, value);
+                        if (player.isValidMove(board, move)) {
+                            validMoves.add(move);
+                        }
+                    }
+                }
             }
         }
 
-
-        int rnd_row = random.nextInt(board_Size);
-        int rnd_col = random.nextInt(board_Size);
-        int rnd_val = random.nextInt(board_Size) + 1;
-        int maxIter = board_Size*board_Size;
-        int cpt = 0;
-
-
-        Move temp_move = new Move(rnd_row, rnd_col, rnd_val);
-        while ((!board.isCellEmpty(rnd_row, rnd_col) || !player.isValidMove(board, temp_move)) && cpt < maxIter) {
-            rnd_row = random.nextInt(board_Size);
-            rnd_col = random.nextInt(board_Size);
-            rnd_val = random.nextInt(board_Size) + 1;
-            temp_move = new Move(rnd_row, rnd_col, rnd_val);
-            cpt += 1;
-
+        // Aucun coup valide disponible
+        if (validMoves.isEmpty()) {
+            return null;
         }
 
-        Move move = new Move(rnd_row,rnd_col,rnd_val);
-
-        if ( cpt == maxIter || !(player.isValidMove(board, move)) )  return null;
-
-
-        return move;
+        // Choisit un coup valide au hasard
+        return validMoves.get(random.nextInt(validMoves.size()));
     }
+
 
 
     /**
