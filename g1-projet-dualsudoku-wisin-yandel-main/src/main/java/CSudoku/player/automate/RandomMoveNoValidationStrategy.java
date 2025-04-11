@@ -6,6 +6,8 @@ import CSudoku.player.Player;
 import CSudoku.player.MoveStrategy;
 
 import java.util.Random;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Represents a strategy for selecting a random move in the Sudoku game.
@@ -24,32 +26,36 @@ public class RandomMoveNoValidationStrategy implements MoveStrategy {
      */
     @Override
     public Move selectMove(CSudokuBoard board, Player player) {
-        //TODO
         Random random = new Random();
         int boardSize = board.getSize();
 
-        /** Número aleatorio entre 0 et la taille de la grille - 1*/
-        int random_row = random.nextInt(boardSize) ;
-        int random_col = random.nextInt(boardSize) ;
+        // Liste pour stocker les coordonnées des cases vides
+        List<int[]> emptyCells = new ArrayList<>();
 
-        /** Número aleatorio entre  et la taille de la grille */
-        int random_val = random.nextInt(boardSize) + 1;
-
-        int maxIter = boardSize*boardSize ;
-        int cpt = 0;
-
-        while (!(board.isCellEmpty(random_row,random_col )) && cpt < maxIter){
-            random_row = random.nextInt(boardSize) ;
-            random_col = random.nextInt(boardSize) ;
-            cpt += 1;
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
+                if (board.isCellEmpty(row, col)) {
+                    emptyCells.add(new int[]{row, col});
+                }
+            }
         }
-        Move move = new Move(random_row,random_col,random_val);
 
-        if ( cpt == maxIter) return null;
+        // Si aucune case vide n'est trouvée
+        if (emptyCells.isEmpty()) {
+            return null;
+        }
 
-        return move;
+        // Choisir une case vide au hasard
+        int[] coords = emptyCells.get(random.nextInt(emptyCells.size()));
+        int row = coords[0];
+        int col = coords[1];
 
+        // Choisir une valeur aléatoire (entre 1 et boardSize)
+        int value = random.nextInt(boardSize) + 1;
+
+        return new Move(row, col, value);
     }
+
     /**
      * Returns the name of the strategy, which in this case is "Random No Validation".
      * <p>
